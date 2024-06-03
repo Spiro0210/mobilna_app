@@ -2,32 +2,44 @@
     #include <stdlib.h>
     #include <stdio.h>
     #include <string.h>
+    #include "Pmf0.tab.h"
+    #include "error.h"
 
     struct Variable{
         char* id;
         int value;
         struct Variable* next;
-    }
+    };
+
+    void yyerror(const char* s);
 
     //sad tabela...
 %}
 
 %start S 
-%token SC
-%token ID
-%token IF ELSE WHILE FOR BREAK CONTINUE RETURN 
-%token TRUE FALSE DO
-%token INTEGER BOOL STRING DOUBLE DOUBLE_EXP HEX
-%token ASSIGN EQ SUB ADD MULT DIV MOD
-%token NEGATIVE COMPARE COMPARE_DIF COMA PERIOD OPEN_BRACKET CLOSE_BRACKET
-%token LESS MORE LESS_EQ MORE_EQ AND OR DIF DEGREE 
-%left ADD SUB
-%left MUL DIV MOD
-%nonassoc EQ COMPARE COMPARE_DIF
-%left LESS MORE LESS_EQ MORE_EQ
-%left AND OR
+%token TOKEN_SC
+%token TOKEN_ID
+%token TOKEN_IF 
+%token TOKEN_ELSE 
+%token TOKEN_WHILE 
+%token TOKEN_FOR 
+%token TOKEN_BREAK 
+%token TOKEN_CONTINUE 
+%token TOKEN_RETURN 
+%token TOKEN_TRUE TOKEN_FALSE 
+%token TOKEN_DO
+%token TOKEN_INTEGER TOKEN_BOOL TOKEN_STRING TOKEN_DOUBLE TOKEN_DOUBLE_EXP TOKEN_HEX
+%token TOKEN_EQ TOKEN_ADD TOKEN_SUB TOKEN_MULT TOKEN_DIV TOKEN_MOD
+%token TOKEN_NEGATION TOKEN_COMPARE TOKEN_COMPARE_DIF TOKEN_COMA TOKEN_PERIOD
+%token OPEN_BRACKET CLOSE_BRACKET
+%token TOKEN_LESS TOKEN_MORE TOKEN_LESS_EQ TOKEN_MORE_EQ TOKEN_AND TOKEN_OR TOKEN_DEGREE 
+%token TOKEN_READ TOKEN_WRITE 
 
-%right DEGREE
+%left TOKEN_ADD TOKEN_SUB
+%left TOKEN_MULT TOKEN_DIV TOKEN_MOD
+%nonassoc TOKEN_EQ TOKEN_COMPARE TOKEN_COMPARE_DIF
+%left TOKEN_LESS TOKEN_MORE TOKEN_LESS_EQ TOKEN_MORE_EQ
+%left TOKEN_AND TOKEN_OR
 
 %%
 S: S stat   { }
@@ -39,118 +51,113 @@ S: S stat   { }
     |
 ;
 
-stat: exp T_SC {printf("%d\n", $1);}
-    | ID EQ exp T_SC {printf("%s=%d\n", $1, $3);}
+stat: exp TOKEN_SC {printf("%d\n", $1);}
+    | TOKEN_ID TOKEN_EQ exp TOKEN_SC {printf("%s=%d\n", $1, $3);}
 ;
 
-statDouble: expDouble T_SC {printf("%f\n",$1);}
-    | ID EQ expDouble T_SC {printf("%s=%f\n", $1, $3);}
+statDouble: expDouble TOKEN_SC {printf("%f\n",$1);}
+    | TOKEN_ID TOKEN_EQ expDouble TOKEN_SC {printf("%s=%f\n", $1, $3);}
 ;
 
-statDoubleExp: expDoubleExp T_SC {printf("%e\n", $1);}
-    | ID EQ expDoubleExp T_SC {printf("%s=%e\n", $1, $3);}
+statDoubleExp: expDoubleExp TOKEN_SC {printf("%e\n", $1);}
+    | TOKEN_ID TOKEN_EQ expDoubleExp TOKEN_SC {printf("%s=%e\n", $1, $3);}
 ;
 
-statHex: expHex T_SC {printf("%x\n", $1);}
-    | ID EQ expHex T_SC {printf("%s=%x\n", $1, $3);}
+statHex: expHex TOKEN_SC {printf("%x\n", $1);}
+    | TOKEN_ID TOKEN_EQ expHex TOKEN_SC {printf("%s=%x\n", $1, $3);}
 ;
 
-statBool: expBool T_SC {printf("%d\n", $1);}
-    | ID EQ expBool T_SC {printf("%s=%d\n", $1, $3);}
+statBool: expBool TOKEN_SC {printf("%d\n", $1);}
+    | TOKEN_ID TOKEN_EQ expBool TOKEN_SC {printf("%s=%d\n", $1, $3);}
 ;
 
-statStr: expStr T_SC {printf("%s\n", $1);}
-    | ID EQ expStr T_SC {printf("%s=%s\n", $1, $3);}
+statStr: expStr TOKEN_SC {printf("%s\n", $1);}
+    | TOKEN_ID TOKEN_EQ expStr TOKEN_SC {printf("%s=%s\n", $1, $3);}
 ;
 
 exp:
-    exp ADD exp              { $$=$1+$3; }
-    | exp SUB exp           { $$=$1-$3; }
-    | exp MULT exp             { $$=$1*$3; }
-    | exp DIV exp             { $$=$1/$3; }
-    | exp MOD exp             { $$=$1%$3; }
-    | exp COMPARE exp       { $$=$1==$3; }
-    | exp LESS exp           { $$=$1<$3; }
-    | exp MORE exp            { $$=$1>$3; }
-    | exp LESS_EQ exp    { $$=$1<=$3; }
-    | exp MORE_EQ exp     { $$=$1>=$3; }
-    | exp COMPARE_DIF exp       { $$=$1!=$3; }
-    | exp DEGREE exp       { /*...*/ }
+    exp TOKEN_ADD exp              { $$=$1+$3; }
+    | exp TOKEN_SUB exp           { $$=$1-$3; }
+    | exp TOKEN_MULT exp             { $$=$1*$3; }
+    | exp TOKEN_DIV exp             { $$=$1/$3; }
+    | exp TOKEN_MOD exp             { $$=$1%$3; }
+    | exp TOKEN_COMPARE exp       { $$=$1==$3; }
+    | exp TOKEN_LESS exp           { $$=$1<$3; }
+    | exp TOKEN_MORE exp            { $$=$1>$3; }
+    | exp TOKEN_LESS_EQ exp    { $$=$1<=$3; }
+    | exp TOKEN_MORE_EQ exp     { $$=$1>=$3; }
+    | exp TOKEN_COMPARE_DIF exp       { $$=$1!=$3; }
     | OPEN_BRACKET exp CLOSE_BRACKET    { $$=$2; }
-    | INTEGER                     { $$=$1;}
-    | ID                   { /*kad napravim tabelu*/ }
+    | TOKEN_INTEGER                     { $$=$1;}
+    | TOKEN_ID                   { /*kad napravim tabelu*/ }
 ;
 
 expDouble: 
-    expDouble ADD expDouble     { $$=$1+$3; }
-    | expDouble SUB expDouble   { $$=$1-$3; }
-    | expDouble MULT expDouble  { $$=$1*$3; }
-    | expDouble DIV expDouble   { $$=$1/$3; }
-    | expDouble COMPARE expDouble { $$=$1==$3; }
-    | expDouble LESS expDouble  { $$=$1<$3; }
-    | expDouble MORE expDouble  { $$=$1>$3; }
-    | expDouble LESS_EQ expDouble { $$=$1<=$3; }
-    | expDouble MORE_EQ expDouble { $$=$1>=$3; }
-    | expDouble COMPARE_DIF expDouble { $$=$1!=$3; }
+    expDouble TOKEN_ADD expDouble     { $$=$1+$3; }
+    | expDouble TOKEN_SUB expDouble   { $$=$1-$3; }
+    | expDouble TOKEN_MULT expDouble  { $$=$1*$3; }
+    | expDouble TOKEN_DIV expDouble   { $$=$1/$3; }
+    | expDouble TOKEN_COMPARE expDouble { $$=$1==$3; }
+    | expDouble TOKEN_LESS expDouble  { $$=$1<$3; }
+    | expDouble TOKEN_MORE expDouble  { $$=$1>$3; }
+    | expDouble TOKEN_LESS_EQ expDouble { $$=$1<=$3; }
+    | expDouble TOKEN_MORE_EQ expDouble { $$=$1>=$3; }
+    | expDouble TOKEN_COMPARE_DIF expDouble { $$=$1!=$3; }
     | OPEN_BRACKET expDouble CLOSE_BRACKET { $$=$2; }
-    | DOUBLE                { $$=$1; }
+    | TOKEN_DOUBLE                { $$=$1; }
 ;
 
 expDoubleExp: 
-    expDoubleExp ADD expDoubleExp     { $$=$1+$3; }
-    | expDoubleExp SUB expDoubleExp   { $$=$1-$3; }
-    | expDoubleExp MULT expDoubleExp  { $$=$1*$3; }
-    | expDoubleExp DIV expDoubleExp   { $$=$1/$3; }
-    | expDoubleExp COMPARE expDoubleExp { $$=$1==$3; }
-    | expDoubleExp LESS expDoubleExp  { $$=$1<$3; }
-    | expDoubleExp MORE expDoubleExp  { $$=$1>$3; }
-    | expDoubleExp LESS_EQ expDoubleExp { $$=$1<=$3; }
-    | expDoubleExp MORE_EQ expDoubleExp { $$=$1>=$3; }
-    | expDoubleExp COMPARE_DIF expDoubleExp { $$=$1!=$3; }
+    expDoubleExp TOKEN_ADD expDoubleExp     { $$=$1+$3; }
+    | expDoubleExp TOKEN_SUB expDoubleExp   { $$=$1-$3; }
+    | expDoubleExp TOKEN_MULT expDoubleExp  { $$=$1*$3; }
+    | expDoubleExp TOKEN_DIV expDoubleExp   { $$=$1/$3; }
+    | expDoubleExp TOKEN_COMPARE expDoubleExp { $$=$1==$3; }
+    | expDoubleExp TOKEN_LESS expDoubleExp  { $$=$1<$3; }
+    | expDoubleExp TOKEN_MORE expDoubleExp  { $$=$1>$3; }
+    | expDoubleExp TOKEN_LESS_EQ expDoubleExp { $$=$1<=$3; }
+    | expDoubleExp TOKEN_MORE_EQ expDoubleExp { $$=$1>=$3; }
+    | expDoubleExp TOKEN_COMPARE_DIF expDoubleExp { $$=$1!=$3; }
     | OPEN_BRACKET expDoubleExp CLOSE_BRACKET { $$=$2; }
-    | DOUBLE_EXP                { $$=$1; }
+    | TOKEN_DOUBLE_EXP                { $$=$1; }
 ;
 
 expHex:
-    expHex ADD expHex          { $$=$1+$3; }
-    | expHex SUB expHex       { $$=$1-$3; }
-    | expHex MULT expHex             { $$=$1*$3; }
-    | expHex DIV expHex             { $$=$1/$3; }
-    | expHex COMPARE expHex       { $$=$1==$3; }
-    | expHex LESS expHex           { $$=$1<$3; }
-    | expHex MORE expHex            { $$=$1>$3; }
-    | expHex LESS_EQ expHex    { $$=$1<=$3; }
-    | expHex MORE_EQ expHex     { $$=$1>=$3; }
-    | expHex COMPARE_DIF expHex       { $$=$1!=$3; }
+    expHex TOKEN_ADD expHex          { $$=$1+$3; }
+    | expHex TOKEN_SUB expHex       { $$=$1-$3; }
+    | expHex TOKEN_MULT expHex             { $$=$1*$3; }
+    | expHex TOKEN_DIV expHex             { $$=$1/$3; }
+    | expHex TOKEN_COMPARE expHex       { $$=$1==$3; }
+    | expHex TOKEN_LESS expHex           { $$=$1<$3; }
+    | expHex TOKEN_MORE expHex            { $$=$1>$3; }
+    | expHex TOKEN_LESS_EQ expHex    { $$=$1<=$3; }
+    | expHex TOKEN_MORE_EQ expHex     { $$=$1>=$3; }
+    | expHex TOKEN_COMPARE_DIF expHex       { $$=$1!=$3; }
     | OPEN_BRACKET expHex CLOSE_BRACKET       { $$=$2;}
-    | HEX                       { $$=$1;}
+    | TOKEN_HEX                       { $$=$1;}
 ;
 
 expBool:
-    NEGATIVE expBool    { $$=!$1; }
-    | expBool AND expBool { $$=$1&&$3; }
-    | expBool OR expBool { $$=$1||$3; }
-    | expBool COMPARE expBool { $$=$1==$3; }
-    | expBool COMPARE_DIF expBool { $$=$1!=$3; }
-    | OPEN_BRACKET expBool OPEN_BRACKET { $$=$2; }
-    | BOOL { $$=$1; }
+    TOKEN_TRUE  {$$=$1;}
+    |   TOKEN_FALSE {$$=$1;}
 ;
 
 expStr:
-    STRING { $$=strdup($1); }
+    TOKEN_STRING { /*strdup mi ne radi?*/ }
 ;
 
 %%
 
 void yyerror(const char* s){
-    printf("%s\n",s);
+    printf("%s\n", s);
 }
+
 int main(){
-    int res = yyparse(); //pokrece i vraca parser
+    int res=yyparse();
+
     if(res==0){
-        printf("Ispravan ulaz\n");
-    }else{
-        printf("Neispravan ulaz\n");
-    }
+        printf("Ulaz ispravan\n");
+    } else printf("Ulaz neispravan\n");
+    
     return 0;
 }

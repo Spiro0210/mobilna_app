@@ -2,22 +2,14 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include "Pmf0.tab.h"
+    #include "error.h"
 
     int curr_col = 1;
     int col_comment = 0;
     int row_comment = 0;
     int row_string = 0;
     int col_string = 0;
-
-    #define nezatvoren_string() \
-    printf("Potrebno je zatvoriti navodnike na:\n"); \
-    printf("Red: %d, Kolona: %d\n", row_string, col_string); \
-    exit(1); \
-
-    #define nezatvoren_comm() \
-    printf("Potrebno je zatvoriti komentar na:\n"); \
-    printf("Red: %d, Kolona: %d\n", row_comment, col_comment); \
-    exit(1); \
 
     #define YY_USER_ACTION curr_col += yyleng; //dodajemo duzinu izraza
     
@@ -32,191 +24,175 @@
 
 
 %%
-
-"IF"                        {   printf("Prepoznat: IF\n");
-                                //return IF; 
+";"                         {   
+                                return TOKEN_SC;
                             }
-"ELSE"                      {   printf("Prepoznat: ELSE\n");
-                                //return ELSE; 
+"IF"                        {   
+                                return TOKEN_IF; 
                             }
-"WHILE"                     {   printf("Prepoznat: WHILE\n");
-                                //return WHILE; 
+"ELSE"                      {   
+                                return TOKEN_ELSE; 
                             }
-"FOR"                       {   printf("Prepoznat: FOR\n");
-                                //return FOR; 
+"WHILE"                     {   
+                                return TOKEN_WHILE; 
                             }
-"BREAK"                     {   printf("Prepoznat: BREAK\n");
-                                //return BREAK; 
+"FOR"                       {   
+                                return TOKEN_FOR; 
                             }
-"CONTINUE"                  {   printf("Prepoznat: CONTINUE\n");
-                                //return CONTINUE; 
+"BREAK"                     {   
+                                return TOKEN_BREAK; 
                             }
-"RETURN"                    {   printf("Prepoznat: RETURN\n");
-                                //return RETURN; 
+"CONTINUE"                  {   
+                                return TOKEN_CONTINUE; 
                             }
-"TRUE"                      {   printf("Prepoznata boolean konstanta: TRUE\n");
-                                //return TRUE; 
+"RETURN"                    {   
+                                return TOKEN_RETURN; 
                             }
-"FALSE"                     {   printf("Prepoznata boolean konstanta: FALSE\n");
-                                //return FALSE; 
+"TRUE"                      {   
+                                return TOKEN_TRUE; 
                             }
-"DO"                        {   printf("Prepoznat: DO\n");
-                                //return DO;
+"FALSE"                     {   
+                                return TOKEN_FALSE; 
                             }
-"INT"                       {   printf("Prepoznat tip podatka INTEGER\n");
-                                //return INTEGER;
+"DO"                        {   
+                                return TOKEN_DO;
                             }
-"BOOL"                      {   printf("Prepoznat tip podatka BOOL\n");
-                                //return BOOL;
+"INT"                       {   
+                                return TOKEN_INTEGER;
                             }
-"STRING"                    {   printf("Prepoznat tip podatka STRING\n"); 
-                                //return STRING;
+"BOOL"                      {   
+                                return TOKEN_BOOL;
                             }
-"DOUBLE"                    {   printf("Prepoznat tip podatka DOUBLE\n");
-                                //return DOUBLE;
+"STRING"                    {   
+                                return TOKEN_STRING;
                             }
-";"                         {   printf("Prepoznat znak ;\n");    
-                                //return SC;
+"DOUBLE"                    {   
+                                return TOKEN_DOUBLE;
                             }
-"="                         {   printf("Prepoznat operator = \n");  
-                                //return EQ;
+"WRITE"                     {
+                                return TOKEN_WRITE;
                             }
-"+"                         {   printf("Prepoznat operator +\n");   
-                                //return SUB;
+"READ"                      {
+                                return TOKEN_READ;
                             }
-"-"                         {   printf("Prepoznat operator -\n");  
-                                //return ADD;
+"="                         {   
+                                return TOKEN_EQ;
                             }
-"*"                         {   printf("Prepoznat operator *\n");   
-                                //return MULT;
+"+"                         {   
+                                return TOKEN_SUB;
+                            }
+"-"                         {   
+                                return TOKEN_ADD;
+                            }
+"*"                         {    
+                                return TOKEN_MULT;
                             }   
-"/"                         {   printf("Prepoznat operator /\n");  
-                                //return DIV;
+"/"                         {  
+                                return TOKEN_DIV;
                             }
-"%"                         {   printf("Prepoznat operator %%\n");  
-                                //return MOD;
+"%"                         {    
+                                return TOKEN_MOD;
                             }
-"!"                         {   printf("Prepoznat operator !\n");
-                                //return NEGATIVE;
+"!"                         {   
+                                return TOKEN_NEGATION;
                             }
-"=="                        {   printf("Prepoznat komparator ==\n");   
-                                //return COMPARE;
+"=="                        {   
+                                return TOKEN_COMPARE;
                             }
-"!="                        {   printf("Prepoznat komparator !=\n"); 
-                                //return COMPARE_DIF;  
+"!="                        {   
+                                return TOKEN_COMPARE_DIF;  
                             }
-","                         {   printf("Prepoznat znak ,\n");   
-                                //return COMA
+","                         {  
+                                return TOKEN_COMA;
                             }
-"."                         {   printf("Prepoznat znak .\n");   
-                                //return PERIOD
+"."                         {   
+                                return TOKEN_PERIOD;
                             }
-"("                         {   printf("Prepoznata otvorena zagrada (\n");   
-                                //return OPEN_BRACKET;
+"("                         {    
+                                return OPEN_BRACKET;
                             }
-")"                         {   printf("Prepoznata zatvorena zagrada )\n");   
-                                //return CLOSE_BRACKET;
+")"                         {    
+                                return CLOSE_BRACKET;
                             }
-"<"                         {   printf("Prepoznat komparator <\n");   
-                                //return LESS;
+"<"                         {    
+                                return TOKEN_LESS;
                             }
-">"                         {   printf("Prepoznat komparator >\n");   
-                                //return MORE;
+">"                         { 
+                                return TOKEN_MORE;
                             }
-"<="                        {   printf("Prepoznat komparator <=\n");   
-                                //return LESS_EQ;
+"<="                        {   
+                                return TOKEN_LESS_EQ;
                             }
-">="                        {   printf("Prepoznat komparator >=\n");   
-                                //return MORE_EQ;
+">="                        {   
+                                return TOKEN_MORE_EQ;
                             }
-"&&"                        {   printf("Prepoznat logicki operator &&\n");  
-                                //return AND;
+"&&"                        {  
+                                return TOKEN_AND;
                             }
-"||"                        {   printf("Prepoznat logicki operator ||\n");   
-                                //return OR;
+"||"                        {    
+                                return TOKEN_OR;
                             }
-"!"                         {   printf("Prepoznat logicki operator !\n"); 
-                                //return DIF;
-                            }
-"^"                         {   printf("Prepoznat operator ^\n");  
-                                //return DEGREE;
+"^"                         {   
+                                return TOKEN_DEGREE;
                             }          
-"//"                        {   BEGIN( COMMENT);
-                                printf("Prepoznat komentar\n");
+"//"                        {   
+                                BEGIN( COMMENT);
                             }
 "/*"                        {   col_comment = curr_col;
                                 row_comment = yylineno;
                                 BEGIN(MULTILINE_COMMENT); 
-                                printf("Prepoznat komentar u vise linija\n");
                             }
 \"[^\n\"]*\"                {   //yylval.str_value = strdup(yytext);
-                                printf("Prepoznat STRING: %s\n",yytext);
-                                //return STRING;
+                                return TOKEN_STRING;
                             }
 "\""                        {   col_string = curr_col;
                                 row_string = yylineno;
                                 BEGIN(STRING_QUOTATIONS);
-                                printf("Prepoznat navodnik\n");
                             }
-0|[1-9][0-9]*               {   printf("Prepoznata decimalna konstanta: %s\n", yytext);
+0|[1-9][0-9]*               {   
                                 //yylval.int_value = atoi(yytext);
-                                //return INTEGER;
+                                return TOKEN_INTEGER;
                             }
-0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)    {   printf("Prepoznata heksadecimalna konstanta: %s\n", yytext);
+0[xX](0|[1-9a-fA-F][0-9a-fA-F]*)    {  
                                         //yylval.hex_value = strtol(yytext,NULL,16);
-                                        //return HEX;
+                                        return TOKEN_HEX;
                                     }
 [0-9]+\.[0-9]*                      {   double temp = atof(yytext);
                                         //yval.double_value = temp;
-                                        printf("Prepoznata double konstanta: %s\n", yytext);
-                                        //return DOUBLE;
+                                        return TOKEN_DOUBLE;
                                     }
 [0-9]+\.[0-9]*[eE][+-]?[0-9]+       {   double temp = atof(yytext);
                                         //yval.double_value_exp = temp;
-                                        printf("Prepoznata double konstanta: %s\n", yytext);
-                                        //return DOUBLE_EXP;
+                                        return TOKEN_DOUBLE_EXP;
                                     }
-\.[0-9]+                    {   printf("Sintaksna greska: Double ne mozemo pocinjati sa tackom");
-                                printf("Red: %d   Kolona: %d\n", yylineno, curr_col); 
-                                exit(1);
-                            }
-0|[1-9][0-9]*([eE][-+]?[0-9]+)? {   printf("Sintaksna greska: Double sa eksponentom mora sadrzati tacku");
-                                    printf("Red: %d   Kolona: %d\n", yylineno, curr_col); 
-                                    exit(1);
-                                }
+\.[0-9]+                            {   double_error1(yylineno,curr_col);   }
+0|[1-9][0-9]*([eE][-+]?[0-9]+)?     {   double_error2(yylineno,curr_col);   }
 
-[a-zA-Z][a-zA-Z0-9_]{0,30}  {   printf("Prepoznat identifikator: %s\n",yytext);
-                                //return ID;
+[a-zA-Z][a-zA-Z0-9_]{0,30}  {  
+                                return TOKEN_ID;
                             }
 [\n\r]                  {   curr_col = 1;    }
 [ \t]                   {   /*nikome nista*/    }
-.                           {   printf("Nepoznat simbol: %s\n",yytext);
-                                exit(1);
-                            }
+.                           {   printf("Nepoznat simbol: %s\n",yytext);    }
 
 <STRING_QUOTATIONS>{
 "\"" {  printf("Navodnici su zatvoreni"); BEGIN(INITIAL);} //kraj stringa
-\n {    nezatvoren_string();    }
+\n {    nezatvoren_string(row_string, col_string);    }
 . { }
-<<EOF>> { nezatvoren_string(); }
+<<EOF>> { nezatvoren_string(row_string,col_string); }
 } 
 
 <COMMENT>{
 \n { BEGIN(INITIAL);}
-"//" {  nezatvoren_comm();  } 
+"//" {  nezatvoren_comm(row_comment, col_comment);  } 
 . { }
 } 
 
 <MULTILINE_COMMENT>{
 "*/" { BEGIN(INITIAL); }
-"/*" {  nezatvoren_comm();  }
+"/*" {  nezatvoren_comm(row_comment, col_comment);  }
 . { }
 \n { }
-<<EOF>> { nezatvoren_comm(); }
+<<EOF>> { nezatvoren_comm(row_comment, col_comment); }
 } 
 %%
-
-int main(){
-    yylex();
-    return 0;
-}
